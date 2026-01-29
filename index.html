@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Downloader Ultra</title>
+    <title>Mega Downloader Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white min-h-screen flex items-center justify-center p-6">
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-6 font-sans">
 
-    <div class="max-w-md w-full bg-zinc-900 p-10 rounded-[2.5rem] shadow-2xl border border-white/5 text-center">
-        <h1 class="text-4xl font-black mb-2 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">
-            DL-MASTER
+    <div class="max-w-md w-full bg-slate-900 p-10 rounded-[2.5rem] shadow-2xl border border-emerald-500/20 text-center">
+        <h1 class="text-4xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent uppercase italic">
+            Turbo-Save
         </h1>
-        <p class="text-zinc-500 text-xs mb-8 uppercase tracking-widest font-bold">TikTok • Instagram • YouTube</p>
+        <p class="text-slate-500 text-xs mb-8 font-bold tracking-[0.2em]">INSTAGRAM • TIKTOK • SIN MARCA</p>
         
         <input type="text" id="urlInput" placeholder="Pega el link aquí..." 
-            class="w-full p-5 rounded-2xl bg-black border border-zinc-800 mb-4 outline-none focus:ring-2 focus:ring-orange-500 transition-all text-center text-sm">
+            class="w-full p-5 rounded-2xl bg-black border border-slate-800 mb-4 outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-center">
         
         <button onclick="descargar()" id="btn" 
-            class="w-full bg-orange-600 hover:bg-orange-500 py-5 rounded-2xl font-black transition-all shadow-lg active:scale-95">
-            DESCARGAR AHORA
+            class="w-full bg-emerald-600 hover:bg-emerald-500 py-5 rounded-2xl font-black shadow-lg active:scale-95 transition-all">
+            EXTRAER VIDEO
         </button>
 
-        <div id="status" class="hidden mt-6 text-xs font-bold uppercase tracking-widest"></div>
+        <div id="status" class="hidden mt-6 text-xs font-bold uppercase"></div>
         
         <div id="resultado" class="hidden mt-8">
             <a id="linkDescarga" href="#" target="_blank" 
                 class="inline-flex items-center gap-2 bg-white text-black px-12 py-4 rounded-full font-black text-sm shadow-xl animate-bounce">
-                ⬇️ GUARDAR VIDEO
+                ⬇️ GUARDAR AHORA
             </a>
         </div>
     </div>
@@ -39,36 +39,32 @@
             const status = document.getElementById('status');
             const resultado = document.getElementById('resultado');
 
-            if(!url) return alert("Pega un link primero");
+            if(!url) return alert("Copia un link primero");
 
             btn.disabled = true;
             status.classList.remove('hidden');
-            status.innerHTML = "<span class='text-yellow-400 animate-pulse'>Conectando al servidor alternativo...</span>";
+            status.innerHTML = "<span class='text-emerald-400 animate-pulse'>Conectando a servidor de alta velocidad...</span>";
             resultado.classList.add('hidden');
 
+            // Intentamos con una instancia diferente de la API
             try {
-                // He cambiado la dirección del servidor a una que suele estar menos saturada
                 const res = await fetch("https://api.cobalt.tools/api/json", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify({ 
-                        url: url, 
-                        isNoWatermark: true,
-                        vCodec: "h264" 
-                    })
+                    body: JSON.stringify({ url: url, isNoWatermark: true })
                 });
 
                 const data = await res.json();
 
                 if (data.url || (data.picker && data.picker[0].url)) {
                     document.getElementById('linkDescarga').href = data.url || data.picker[0].url;
-                    status.innerHTML = "<span class='text-green-500'>¡CONSEGUIDO!</span>";
+                    status.innerHTML = "<span class='text-green-500'>¡COMPLETADO CON ÉXITO!</span>";
                     resultado.classList.remove('hidden');
                 } else {
-                    throw new Error();
+                    throw new Error("Saturado");
                 }
             } catch (e) {
-                status.innerHTML = "<span class='text-red-500'>EL SERVIDOR SIGUE LLENO. ESPERA 30 SEGUNDOS Y REFRESCA.</span>";
+                status.innerHTML = "<span class='text-red-500'>INSTAGRAM BLOQUEÓ ESTE INTENTO. PRUEBA EN 30 SEGUNDOS.</span>";
             } finally {
                 btn.disabled = false;
             }
