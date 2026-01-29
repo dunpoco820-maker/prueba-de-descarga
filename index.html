@@ -1,33 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Downloader Pro</title>
+    <title>Downloader Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-6 font-sans">
+<body class="bg-zinc-950 text-white min-h-screen flex items-center justify-center p-6">
 
-    <div class="max-w-md w-full bg-slate-900 p-10 rounded-[2.5rem] shadow-2xl border border-emerald-500/20 text-center">
-        <h1 class="text-4xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent uppercase italic">
-            Turbo-Save
+    <div class="max-w-md w-full bg-zinc-900 p-8 rounded-[2rem] border border-white/10 shadow-2xl text-center">
+        <h1 class="text-3xl font-black mb-4 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent italic">
+            FORCE-DL
         </h1>
-        <p class="text-slate-500 text-xs mb-8 font-bold tracking-[0.2em]">INSTAGRAM • TIKTOK • SIN MARCA</p>
         
         <input type="text" id="urlInput" placeholder="Pega el link aquí..." 
-            class="w-full p-5 rounded-2xl bg-black border border-slate-800 mb-4 outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-center">
+            class="w-full p-4 rounded-xl bg-black border border-zinc-700 mb-4 outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-center">
         
         <button onclick="descargar()" id="btn" 
-            class="w-full bg-emerald-600 hover:bg-emerald-500 py-5 rounded-2xl font-black shadow-lg active:scale-95 transition-all">
-            EXTRAER VIDEO
+            class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-xl font-black shadow-lg active:scale-95 transition-all uppercase tracking-widest">
+            Procesar Video
         </button>
 
-        <div id="status" class="hidden mt-6 text-xs font-bold uppercase"></div>
+        <div id="status" class="hidden mt-6 text-[10px] font-mono uppercase text-zinc-500"></div>
         
         <div id="resultado" class="hidden mt-8">
             <a id="linkDescarga" href="#" target="_blank" 
-                class="inline-flex items-center gap-2 bg-white text-black px-12 py-4 rounded-full font-black text-sm shadow-xl animate-bounce">
-                ⬇️ GUARDAR AHORA
+                class="inline-block bg-white text-black px-12 py-4 rounded-full font-black text-sm shadow-xl animate-pulse">
+                ⬇️ DESCARGAR AHORA
             </a>
         </div>
     </div>
@@ -39,32 +38,34 @@
             const status = document.getElementById('status');
             const resultado = document.getElementById('resultado');
 
-            if(!url) return alert("Copia un link primero");
+            if(!url) return alert("Pega el enlace");
 
             btn.disabled = true;
             status.classList.remove('hidden');
-            status.innerHTML = "<span class='text-emerald-400 animate-pulse'>Conectando a servidor de alta velocidad...</span>";
+            status.innerHTML = "Intentando conectar con el servidor...";
             resultado.classList.add('hidden');
 
-            // Intentamos con una instancia diferente de la API
             try {
                 const res = await fetch("https://api.cobalt.tools/api/json", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify({ url: url, isNoWatermark: true })
+                    body: JSON.stringify({ 
+                        url: url, 
+                        isNoWatermark: true
+                    })
                 });
 
                 const data = await res.json();
 
-                if (data.url || (data.picker && data.picker[0].url)) {
-                    document.getElementById('linkDescarga').href = data.url || data.picker[0].url;
-                    status.innerHTML = "<span class='text-green-500'>¡COMPLETADO CON ÉXITO!</span>";
+                if (data.url) {
+                    document.getElementById('linkDescarga').href = data.url;
+                    status.innerHTML = "<span class='text-green-500 font-bold'>¡VIDEO LISTO!</span>";
                     resultado.classList.remove('hidden');
                 } else {
-                    throw new Error("Saturado");
+                    throw new Error();
                 }
             } catch (e) {
-                status.innerHTML = "<span class='text-red-500'>INSTAGRAM BLOQUEÓ ESTE INTENTO. PRUEBA EN 30 SEGUNDOS.</span>";
+                status.innerHTML = "<span class='text-red-500 font-bold'>EL SERVIDOR SIGUE SATURADO. INTENTA DE NUEVO EN UNOS MINUTOS.</span>";
             } finally {
                 btn.disabled = false;
             }
