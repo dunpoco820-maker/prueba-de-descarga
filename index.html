@@ -1,40 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InstaDown Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-black min-h-screen flex items-center justify-center p-4">
-
-    <div class="w-full max-w-md bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 shadow-2xl text-center">
-        <div class="mb-6">
-            <i class="fab fa-instagram text-5xl text-pink-500"></i>
-            <h1 class="text-2xl font-black text-white mt-2 uppercase tracking-tighter">InstaDown Pro</h1>
-        </div>
-
-        <input type="text" id="urlInput" placeholder="Pega link de Historia o Reel..." 
-            class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-4 text-white mb-4 outline-none focus:ring-2 focus:ring-pink-500 transition-all">
-
-        <button onclick="descargar()" id="btn" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold py-4 rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg">
-            OBTENER VIDEO
-        </button>
-
-        <div id="loading" class="hidden mt-6 flex flex-col items-center">
-            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-white"></div>
-            <p class="text-white text-sm mt-2">Cocinando tu descarga...</p>
-        </div>
-
-        <div id="resultado" class="hidden mt-6 animate-bounce">
-            <a id="linkFinal" href="#" target="_blank" class="bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow-xl flex items-center justify-center gap-2">
-                <i class="fas fa-check-circle"></i> ¡DESCARGAR AHORA!
-            </a>
-        </div>
-    </div>
-
-    <script>
+<script>
         async function descargar() {
             const input = document.getElementById('urlInput');
             const btn = document.getElementById('btn');
@@ -48,21 +12,27 @@
             btn.disabled = true;
 
             try {
-                // Usamos un servidor intermedio más potente
+                // Quitamos configuraciones pesadas para que sea más rápido y no lo bloqueen
                 const res = await fetch('https://api.cobalt.tools/api/json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         url: input.value,
-                        vCodec: "h264", // Formato universal
                         isNoWatermark: true
                     })
                 });
 
                 const data = await res.json();
 
-                if (data.url || (data.picker && data.picker[0].url)) {
-                    document.getElementById('linkFinal').href = data.url || data.picker[0].url;
+                // Si es un Reel o Video directo
+                if (data.url) {
+                    document.getElementById('linkFinal').href = data.url;
+                    loading.classList.add('hidden');
+                    resultado.classList.remove('hidden');
+                } 
+                // Si es una Historia con varias imágenes o videos (picker)
+                else if (data.picker && data.picker.length > 0) {
+                    document.getElementById('linkFinal').href = data.picker[0].url;
                     loading.classList.add('hidden');
                     resultado.classList.remove('hidden');
                 } else {
@@ -70,11 +40,9 @@
                 }
             } catch (e) {
                 loading.classList.add('hidden');
-                alert("Instagram bloqueó la conexión. Intenta copiar el link de nuevo o prueba con otro video público.");
+                alert("Intenta de nuevo. Si persiste, prueba copiar el enlace desde una pestaña de incógnito de Instagram.");
             } finally {
                 btn.disabled = false;
             }
         }
     </script>
-</body>
-</html>
